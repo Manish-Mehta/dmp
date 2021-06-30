@@ -15,11 +15,10 @@ function HitProtectedAPI() {
       console.error(err);
     }
     try {
-      let res = await fetch(`/api/protected/`, {
+      let res = await fetch(`/api/dashboard/`, {
         headers: { authorization: `Bearer ${accessToken}` },
       });
 
-      console.log(res);
       let message;
       if (res.status === 200) {
         res = await res.json();
