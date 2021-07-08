@@ -1,26 +1,24 @@
-const request = require('request');     // [Deprecated] Do not use request remove this after testing  
+const fetch = require('node-fetch');
 
-module.exports = {
+const router = require('express').Router();
 
-    testProtectedApi: (req, res) => {
-        console.log("token validated");
-        console.log(req.user);
-        res.json({ message: "Super secret stuff" });
-    },
-    dashboardData: (req, res) => {
+// Middlewares
+const { checkJwt, createScopesMiddleware } = require('../middlewares/auth');
 
-        // console.log(req.headers);
+const dashboardData = async (req, res) => {
 
-        request.get({
-            url: 'https://betsol-test.us.auth0.com/userinfo',
-            headers: {
-                'Authorization': req.headers.authorization
-            }
-        }, (e, r) => {
-            const userInfo = JSON.parse(r.body);
-            console.log(userInfo);
-            res.json({ message: `Super secret stuff for ${userInfo.name}` });
-        });
+    let userInfo = await fetch('https://betsol-test.us.auth0.com/userinfo', {
+        headers: {
+            'Authorization': req.headers.authorization
+        }
+    });
 
-    }
+    userInfo = await userInfo.json();
+    console.log(userInfo);
+    res.json({ message: `Super secret stuff for ${userInfo.name}` });
+
 }
+
+router.get('/', checkJwt, createScopesMiddleware(['read:dashboard'], { customScopeKey: "permissions" }), dashboardData);
+
+module.exports = router;

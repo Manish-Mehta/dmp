@@ -17,7 +17,7 @@ const checkJwt = jwt({
     algorithms: ["RS256"],
 });
 
-const createScopesMiddleware = scopes => jwtAuthz(scopes);
+const createScopesMiddleware = (scopes, options) => jwtAuthz(scopes, options);
 
 module.exports = {
     checkJwt,
